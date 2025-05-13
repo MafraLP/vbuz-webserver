@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Routes;
 
+use App\Models\Users\Routes\Route;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Clickbar\Magellan\Data\Geometries\LineString;
 
 class RouteSegment extends Model
 {
@@ -25,6 +27,8 @@ class RouteSegment extends Model
         'distance' => 'float',
         'duration' => 'float',
         'expires_at' => 'datetime',
+        // Se você adicionar uma coluna de geometria LineString no futuro
+        // 'linestring_geometry' => LineString::class,
     ];
 
     public function route(): BelongsTo
