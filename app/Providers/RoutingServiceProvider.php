@@ -2,15 +2,13 @@
 
 namespace App\Providers;
 
-use App\Models\Users\User;
-use Illuminate\Auth\EloquentUserProvider;
-use Illuminate\Support\Facades\Auth;
+use App\Services\RouteCalculationService;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class RoutingServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register services.
      */
     public function register(): void
     {
@@ -20,9 +18,10 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap services.
      */
     public function boot(): void
     {
+        //
     }
 }

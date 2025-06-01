@@ -2,6 +2,7 @@
 
 namespace App\Models\Routes;
 
+use App\Models\Institution;
 use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,11 +12,15 @@ class Route extends Model
 {
     protected $fillable = [
         'name',
-        'user_id',
+        'institution_id',
         'total_distance',
         'total_duration',
         'is_published',
         'last_calculated_at',
+        'calculation_status',        // ← ADICIONAR
+        'calculation_started_at',    // ← ADICIONAR
+        'calculation_completed_at',  // ← ADICIONAR
+        'calculation_error'          // ← ADICIONAR
     ];
 
     protected $casts = [
@@ -25,9 +30,9 @@ class Route extends Model
         'last_calculated_at' => 'datetime',
     ];
 
-    public function user(): BelongsTo
+    public function institution(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Institution::class);
     }
 
     public function points(): HasMany

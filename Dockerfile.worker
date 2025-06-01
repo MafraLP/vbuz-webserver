@@ -1,0 +1,91 @@
+# ../vbuz-webserver/Dockerfile.worker
+# Versão otimizada baseada no seu Dockerfile principal
+
+# Use a mesma base image do seu app principal para aproveitar cache
+FROM php:8.2-fpm
+
+# Configurar repositório mais rápido e limpar cache
+RUN echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list \
+    && echo "deb http://deb.debian.org/debian bookworm-updates main" >> /etc/apt/sources.list \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar dependências essenciais apenas (sem coisas desnecessárias)
+RUN apt-get update --fix-missing \
+    && apt-get install -y --no-install-recommends \
+        libpq-dev \
+        supervisor \
+        procps \
+        curl \
+    && docker-php-ext-install pdo_pgsql \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Usar multi-stage se necessário - copiar composer do seu app principal
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Criar usuário
+ARG WWWUSER=1000
+ARG WWWGROUP=1000
+RUN groupadd --force -g $WWWGROUP sail \
+    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u $WWWUSER sail
+
+# Definir diretório
+WORKDIR /var/www
+
+# Criar configuração do Supervisor (inline para ser mais rápido)
+RUN mkdir -p /etc/supervisor/conf.d && \
+cat > /etc/supervisor/conf.d/queue-worker.conf << 'EOF'
+[supervisord]
+nodaemon=true
+user=root
+logfile=/var/log/supervisor/supervisord.log
+pidfile=/var/run/supervisord.pid
+
+[program:laravel-queue-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/artisan queue:work --verbose --tries=3 --timeout=600 --memory=512 --sleep=3
+directory=/var/www
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=sail
+numprocs=2
+redirect_stderr=true
+stdout_logfile=/var/www/storage/logs/worker.log
+stdout_logfile_maxbytes=100MB
+stdout_logfile_backups=2
+stopwaitsecs=3600
+EOF
+
+# Script de inicialização (inline)
+RUN cat > /usr/local/bin/start-worker.sh << 'EOF'
+#!/bin/bash
+set -e
+
+echo "🚀 Iniciando Queue Worker..."
+
+# Aguardar banco
+echo "⏳ Aguardando banco de dados..."
+until php /var/www/artisan migrate:status > /dev/null 2>&1; do
+    echo "   Banco não disponível, aguardando..."
+    sleep 2
+done
+echo "✅ Banco disponível"
+
+# Permissões
+chown -R sail:sail /var/www/storage 2>/dev/null || true
+chmod -R 755 /var/www/storage 2>/dev/null || true
+
+# Limpar cache
+php /var/www/artisan config:clear > /dev/null 2>&1 || true
+
+echo "🎯 Iniciando workers..."
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/queue-worker.conf
+EOF
+
+RUN chmod +x /usr/local/bin/start-worker.sh
+
+# Comando padrão
+CMD ["/usr/local/bin/start-worker.sh"]

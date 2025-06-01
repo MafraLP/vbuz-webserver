@@ -52,6 +52,34 @@ class AuthController extends Controller
         ]);
     }
 
+    public function me()
+    {
+        $user = Auth::user();
+
+        // Carregar perfis específicos baseados na role
+        switch ($user->role) {
+            case 'driver':
+                $user->load('driverProfile');
+                break;
+            case 'manager':
+                $user->load('managerProfile');
+                break;
+            case 'monitor':
+                $user->load('monitorProfile');
+                break;
+            case 'passenger':
+                $user->load('passengerProfile');
+                break;
+        }
+
+        // Adicionar instituições acessíveis usando o método do modelo
+        $user->accessible_institutions = $user->getInstitutions();
+
+        return response()->json([
+            'user' => $user
+        ]);
+    }
+
     public function registerPassenger(Request $request)
     {
         $request->validate([

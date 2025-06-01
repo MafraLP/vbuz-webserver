@@ -29,8 +29,13 @@ return [
     ],
 
     'openrouteservice' => [
-        'api_key' => env('OPENROUTESERVICE_API_KEY'),
+        'api_key' => env('OPENROUTE_SERVICE_API_KEY'),
         'url' => env('OPENROUTESERVICE_URL', 'https://api.openrouteservice.org'),
+    ],
+
+    'osrm' => [
+        'base_url' => env('OSRM_BASE_URL', 'http://osrm-backend:5000'),
+        'enabled' => env('OSRM_ENABLED', false),
     ],
 
     'slack' => [

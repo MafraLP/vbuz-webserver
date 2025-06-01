@@ -24,7 +24,20 @@ Route::post('/simple', function () {
 Route::controller(AuthController::class)
     ->prefix('auth')
     ->group(function () {
-        Route::post('login', 'login');
+
+        // ======= ROTAS PÚBLICAS (sem autenticação) =======
+        Route::post('login', 'login')->name('auth.login');
+        Route::post('register/passenger', 'registerPassenger')->name('auth.register.passenger');
+
+        // ======= ROTAS PROTEGIDAS (com autenticação) =======
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::get('me', 'me')->name('auth.me');
+            Route::post('logout', 'logout')->name('auth.logout');
+
+            // Futuras rotas protegidas podem ser adicionadas aqui
+            // Route::patch('profile', 'updateProfile')->name('auth.profile.update');
+            // Route::post('change-password', 'changePassword')->name('auth.password.change');
+        });
     });
 
 Route::options('{any}', function () {
@@ -33,10 +46,6 @@ Route::options('{any}', function () {
         ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
 })->where('any', '.*');
-
-Route::prefix('route')->group(function () {
-    require 'route.php';
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -72,12 +81,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rotas do usuário
     Route::get('/routes', [RouteController::class, 'index']);
     Route::post('/routes', [RouteController::class, 'store']);
+
     Route::get('/routes/{id}', [RouteController::class, 'show']);
     Route::put('/routes/{id}', [RouteController::class, 'update']);
     Route::delete('/routes/{id}', [RouteController::class, 'destroy']);
 
     // Cálculo de rota
     Route::post('/routes/{id}/calculate', [RouteController::class, 'calculateRoute']);
+    Route::get('/routes/{id}/status', [RouteController::class, 'getCalculationStatus']);
 
     // Publicar/despublicar rota
     Route::post('/routes/{id}/publish', [RouteController::class, 'togglePublish']);

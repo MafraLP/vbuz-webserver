@@ -11,20 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-//        Schema::create('points', function (Blueprint $table) {
-//            $table->id();
-//            $table->string('name');
-//            $table->enum('type', ['stop', 'terminal', 'landmark', 'connection'])->default('stop');
-//            $table->text('description')->nullable();
-//            $table->decimal('latitude', 10, 7);
-//            $table->decimal('longitude', 10, 7);
-//            $table->unsignedBigInteger('institution_id');
-//            $table->boolean('is_active')->default(true);
-//            $table->text('notes')->nullable();
-//            $table->timestamps();
-//
-//            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
-//        });
+        Schema::create('points', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->enum('type', ['stop', 'terminal', 'landmark', 'connection'])->default('stop');
+            $table->text('description')->nullable();
+            $table->decimal('latitude', 10, 7);
+            $table->decimal('longitude', 10, 7);
+            $table->unsignedBigInteger('institution_id');
+            $table->boolean('is_active')->default(true);
+            $table->text('notes')->nullable();
+            $table->timestamps();
+
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
+        });
     }
 
     /**
