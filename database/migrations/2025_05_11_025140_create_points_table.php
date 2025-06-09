@@ -24,8 +24,7 @@ return new class extends Migration
                 $table->index(['institution_id', 'is_active', 'type']);
             } catch (Exception $e) {
                 // Índices já existem, ignorar
-                Log::info('Alguns índices já existem na tabela points: ' . $e->getMessage());
-            }
+                            }
         });
 
         // Adicionar coluna location com PostGIS se disponível
@@ -64,8 +63,7 @@ return new class extends Migration
             $postgisCheck = DB::select("SELECT EXISTS(SELECT 1 FROM pg_extension WHERE extname = 'postgis') as has_postgis");
 
             if (!$postgisCheck[0]->has_postgis) {
-                Log::info('PostGIS não está disponível. Pulando criação de coluna geográfica na tabela points.');
-                return;
+                                return;
             }
 
             // Verificar se a coluna location já existe
@@ -77,8 +75,7 @@ return new class extends Migration
             ");
 
             if ($hasLocationColumn[0]->has_location) {
-                Log::info('Coluna location já existe em points.');
-                return;
+                                return;
             }
 
             // Adicionar coluna location
@@ -113,11 +110,8 @@ return new class extends Migration
             // Criar índice espacial
             DB::statement('CREATE INDEX idx_points_location ON points USING GIST (location)');
 
-            Log::info('Coluna location com PostGIS criada com sucesso em points.');
-
-        } catch (Exception $e) {
-            Log::warning('Erro ao criar coluna PostGIS na tabela points: ' . $e->getMessage());
-        }
+                    } catch (Exception $e) {
+                    }
     }
 
     /**
@@ -139,7 +133,6 @@ return new class extends Migration
             // DB::statement('ALTER TABLE points DROP COLUMN IF EXISTS location');
 
         } catch (Exception $e) {
-            Log::warning('Erro ao remover recursos PostGIS da tabela points: ' . $e->getMessage());
-        }
+                    }
     }
 };

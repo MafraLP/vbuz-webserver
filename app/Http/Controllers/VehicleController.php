@@ -41,8 +41,7 @@ class VehicleController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao buscar veículos da instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar veículos da instituição',
                 'error' => $e->getMessage()
@@ -73,8 +72,7 @@ class VehicleController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao buscar veículo: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar veículo',
                 'error' => $e->getMessage()
@@ -116,8 +114,7 @@ class VehicleController extends Controller
                 'message' => 'Veículo criado com sucesso'
             ], 201);
         } catch (Exception $e) {
-            Log::error('Erro ao criar veículo: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao criar veículo',
                 'error' => $e->getMessage()
@@ -168,8 +165,7 @@ class VehicleController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao atualizar veículo: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao atualizar veículo',
                 'error' => $e->getMessage()
@@ -201,8 +197,7 @@ class VehicleController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao remover veículo: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao remover veículo',
                 'error' => $e->getMessage()

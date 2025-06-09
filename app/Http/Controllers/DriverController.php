@@ -63,8 +63,7 @@ class DriverController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao buscar motoristas da instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar motoristas da instituição',
                 'error' => $e->getMessage()
@@ -112,8 +111,7 @@ class DriverController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao buscar motorista: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar motorista',
                 'error' => $e->getMessage()
@@ -179,8 +177,7 @@ class DriverController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao adicionar motorista à instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao adicionar motorista à instituição',
                 'error' => $e->getMessage()
@@ -227,8 +224,7 @@ class DriverController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao remover motorista da instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao remover motorista da instituição',
                 'error' => $e->getMessage()

@@ -28,8 +28,7 @@ class InstitutionController extends Controller
                 'institutions' => $institutions
             ]);
         } catch (Exception $e) {
-            Log::error('Erro ao buscar instituições do usuário: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar instituições do usuário',
                 'error' => $e->getMessage()
@@ -60,8 +59,7 @@ class InstitutionController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao buscar instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar instituição',
                 'error' => $e->getMessage()
@@ -99,8 +97,7 @@ class InstitutionController extends Controller
                 'message' => 'Instituição criada com sucesso'
             ], 201);
         } catch (Exception $e) {
-            Log::error('Erro ao criar instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao criar instituição',
                 'error' => $e->getMessage()
@@ -147,8 +144,7 @@ class InstitutionController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao atualizar instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao atualizar instituição',
                 'error' => $e->getMessage()
@@ -180,8 +176,7 @@ class InstitutionController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao remover instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao remover instituição',
                 'error' => $e->getMessage()
@@ -213,8 +208,7 @@ class InstitutionController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao buscar usuários da instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar usuários da instituição',
                 'error' => $e->getMessage()
@@ -260,8 +254,7 @@ class InstitutionController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao adicionar usuário à instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao adicionar usuário à instituição',
                 'error' => $e->getMessage()
@@ -296,8 +289,7 @@ class InstitutionController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao remover usuário da instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao remover usuário da instituição',
                 'error' => $e->getMessage()

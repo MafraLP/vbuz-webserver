@@ -61,8 +61,7 @@ class PointController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao buscar pontos da instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar pontos da instituição',
                 'error' => $e->getMessage()
@@ -143,8 +142,7 @@ class PointController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao buscar ponto: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar ponto',
                 'error' => $e->getMessage()
@@ -191,8 +189,7 @@ class PointController extends Controller
                 'message' => 'Ponto criado com sucesso'
             ], 201);
         } catch (Exception $e) {
-            Log::error('Erro ao criar ponto: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao criar ponto',
                 'error' => $e->getMessage()
@@ -250,8 +247,7 @@ class PointController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao atualizar ponto: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao atualizar ponto',
                 'error' => $e->getMessage()
@@ -303,8 +299,7 @@ class PointController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao remover ponto: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao remover ponto',
                 'error' => $e->getMessage()
@@ -396,8 +391,7 @@ class PointController extends Controller
                 ]
             ]);
         } catch (Exception $e) {
-            Log::error('Erro ao buscar pontos próximos: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar pontos próximos',
                 'error' => $e->getMessage()
@@ -478,8 +472,7 @@ class PointController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao obter estatísticas de uso dos pontos: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao obter estatísticas de uso dos pontos',
                 'error' => $e->getMessage()

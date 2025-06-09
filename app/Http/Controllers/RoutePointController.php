@@ -63,8 +63,7 @@ class RoutePointController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao buscar pontos da instituição: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar pontos da instituição',
                 'error' => $e->getMessage()
@@ -151,8 +150,7 @@ class RoutePointController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao buscar pontos da rota: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar pontos da rota',
                 'error' => $e->getMessage()
@@ -192,8 +190,7 @@ class RoutePointController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao buscar ponto: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar ponto',
                 'error' => $e->getMessage()
@@ -251,8 +248,7 @@ class RoutePointController extends Controller
                 'message' => 'Ponto adicionado com sucesso'
             ], 201);
         } catch (Exception $e) {
-            Log::error('Erro ao criar ponto: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao criar ponto',
                 'error' => $e->getMessage()
@@ -322,8 +318,7 @@ class RoutePointController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao atualizar ponto: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao atualizar ponto',
                 'error' => $e->getMessage()
@@ -384,8 +379,7 @@ class RoutePointController extends Controller
                 ], 404);
             }
 
-            Log::error('Erro ao remover ponto: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao remover ponto',
                 'error' => $e->getMessage()

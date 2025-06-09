@@ -1,28 +1,58 @@
 <?php
 
 return [
-    'provider' => env('ROUTING_PROVIDER', 'openrouteservice'),
-    // Configurações OSRM
-    'osrm' => [
-        'enabled' => env('OSRM_ENABLED', false),
-        'base_url' => env('OSRM_BASE_URL', 'http://osrm-backend:5000'),
-        'timeout' => 2, // Timeout baixo para servidor local
-        'retries' => 2,
-        'retry_delay' => 100, // ms
-    ],
+    /*
+    |--------------------------------------------------------------------------
+    | Configuração do Serviço de Roteamento
+    |--------------------------------------------------------------------------
+    |
+    | Aqui você pode configurar qual serviço de roteamento usar:
+    | - false: Usar OSRM local (padrão para desenvolvimento)
+    | - true: Usar API externa (OpenRouteService para produção)
+    |
+    */
+
+    'use_external_api' => env('ROUTING_USE_EXTERNAL_API', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | OSRM Local
+    |--------------------------------------------------------------------------
+    |
+    | Configurações para usar OSRM rodando localmente
+    |
+    */
+
+    'osrm_url' => env('OSRM_URL', 'http://localhost:5000'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | OpenRouteService API
+    |--------------------------------------------------------------------------
+    |
+    | Configurações para usar a API externa do OpenRouteService
+    | Obtenha sua chave em: https://openrouteservice.org/dev/#/signup
+    |
+    */
+    'openroute_service_api_key' => env('OPENROUTE_SERVICE_API_KEY', null),
 
 
-    // Configurações OpenRouteService (fallback)
-    'openrouteservice' => [
-        'timeout' => 5,
-        'retries' => 2,
-        'retry_delay' => 500, // ms
-    ],
+    /*
+    |--------------------------------------------------------------------------
+    | Configurações de Performance
+    |--------------------------------------------------------------------------
+    */
 
-    // Configurações gerais
-    'default_profile' => 'driving-car',
-    'batch_size' => 10,
-    'cache_duration' => 30 * 24 * 60 * 60, // 30 dias
-    'parallel_threshold' => 10,
-    'simplify_geometry' => true,
+    'request_timeout' => env('ROUTING_REQUEST_TIMEOUT', 30),
+    'max_retries' => env('ROUTING_MAX_RETRIES', 2),
+    'rate_limit_per_minute' => env('ROUTING_RATE_LIMIT', 60),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Debug e Logs
+    |--------------------------------------------------------------------------
+    */
+
+    'debug_mode' => env('ROUTING_DEBUG', false),
+    'log_requests' => env('ROUTING_LOG_REQUESTS', true),
 ];

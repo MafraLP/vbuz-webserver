@@ -52,8 +52,7 @@ class RouteController extends Controller
                 'user_institutions' => $institutionIds
             ]);
         } catch (Exception $e) {
-            Log::error('Erro ao buscar rotas: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar rotas',
                 'error' => $e->getMessage()
@@ -85,8 +84,7 @@ class RouteController extends Controller
 
             // Se a rota não tem segmentos calculados, calcular automaticamente
             if ($route->segments->count() === 0 && $route->points->count() >= 2) {
-                Log::info("Rota {$id} não tem segmentos, calculando automaticamente...");
-                $this->startRouteCalculation($route);
+                                $this->startRouteCalculation($route);
             }
 
             return response()->json([
@@ -131,8 +129,7 @@ class RouteController extends Controller
                 $this->createRoutePoints($route, $validated['points']);
 
                 if (count($validated['points']) >= 2) {
-                    Log::info("Calculando rota automaticamente para rota {$route->id}");
-                    $this->startRouteCalculation($route);
+                                        $this->startRouteCalculation($route);
                 }
             }
 
@@ -147,8 +144,7 @@ class RouteController extends Controller
             ], 201);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Erro ao criar rota: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao criar rota',
                 'error' => $e->getMessage()
@@ -179,9 +175,7 @@ class RouteController extends Controller
                 ], 400);
             }
 
-            Log::info("Iniciando cálculo ASSÍNCRONO da rota {$id} com {$route->points->count()} pontos");
-
-            $this->startRouteCalculation($route);
+                        $this->startRouteCalculation($route);
 
             return response()->json([
                 'success' => true,
@@ -364,8 +358,7 @@ class RouteController extends Controller
                 'routes' => $routes
             ]);
         } catch (Exception $e) {
-            Log::error('Erro ao buscar rotas públicas: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar rotas públicas',
                 'error' => $e->getMessage()
@@ -441,8 +434,7 @@ class RouteController extends Controller
                 ]
             ]);
         } catch (Exception $e) {
-            Log::error('Erro ao buscar rotas próximas: ' . $e->getMessage());
-            return response()->json([
+                        return response()->json([
                 'success' => false,
                 'message' => 'Erro ao buscar rotas próximas',
                 'error' => $e->getMessage()
@@ -576,11 +568,153 @@ class RouteController extends Controller
             ], 404);
         }
 
-        Log::error("Erro ao {$action}: " . $e->getMessage());
-        return response()->json([
+                return response()->json([
             'success' => false,
             'message' => "Erro ao {$action}",
             'error' => $e->getMessage()
         ], 500);
+    }
+
+    public function getInstitutionRoutes($institutionId, Request $request)
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user instanceof User) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuário não autenticado'
+                ], 401);
+            }
+
+            // *** VERIFICAR PERMISSÃO DE ACESSO À INSTITUIÇÃO ***
+            if (!$this->userCanAccessInstitution($user, $institutionId)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Você não tem permissão para acessar rotas desta instituição'
+                ], 403);
+            }
+
+            // *** VALIDAR PARÂMETROS OPCIONAIS ***
+            $validated = $request->validate([
+                'per_page' => 'sometimes|integer|min:1|max:100',
+                'page' => 'sometimes|integer|min:1',
+                'search' => 'sometimes|string|max:255',
+                'status' => 'sometimes|in:calculating,completed,error,failed',
+                'published_only' => 'sometimes|boolean',
+                'order_by' => 'sometimes|in:created_at,updated_at,name,total_distance,total_duration',
+                'order_direction' => 'sometimes|in:asc,desc'
+            ]);
+
+            // *** CONSTRUIR QUERY ***
+            $query = Route::where('institution_id', $institutionId);
+
+            // Filtro por texto (busca no nome)
+            if (!empty($validated['search'])) {
+                $search = $validated['search'];
+                $query->where('name', 'ILIKE', "%{$search}%");
+            }
+
+            // Filtro por status de cálculo
+            if (!empty($validated['status'])) {
+                $query->where('calculation_status', $validated['status']);
+            }
+
+            // Filtro por rotas publicadas apenas
+            if (!empty($validated['published_only'])) {
+                $query->where('is_published', true);
+            }
+
+            // *** ORDENAÇÃO ***
+            $orderBy = $validated['order_by'] ?? 'created_at';
+            $orderDirection = $validated['order_direction'] ?? 'desc';
+            $query->orderBy($orderBy, $orderDirection);
+
+            // *** INCLUIR RELACIONAMENTOS ***
+            $query->with([
+                'points' => function($pointQuery) {
+                    $pointQuery->orderBy('sequence')->select(['id', 'route_id', 'sequence', 'name', 'latitude', 'longitude', 'type']);
+                },
+                'segments' => function($segmentQuery) {
+                    $segmentQuery->orderBy('sequence')->select(['id', 'route_id', 'sequence', 'distance', 'duration']);
+                }
+            ]);
+
+            // *** PAGINAR RESULTADOS ***
+            $perPage = $validated['per_page'] ?? 15;
+            $routes = $query->paginate($perPage);
+
+            // *** ADICIONAR ESTATÍSTICAS DA INSTITUIÇÃO ***
+            $institutionStats = $this->getInstitutionRouteStats($institutionId);
+
+            return response()->json([
+                'success' => true,
+                'routes' => $routes,
+                'institution_id' => (int) $institutionId,
+                'stats' => $institutionStats,
+                'filters_applied' => [
+                    'search' => $validated['search'] ?? null,
+                    'status' => $validated['status'] ?? null,
+                    'published_only' => $validated['published_only'] ?? false,
+                    'order_by' => $orderBy,
+                    'order_direction' => $orderDirection
+                ]
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dados de entrada inválidos',
+                'errors' => $e->errors()
+            ], 422);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao buscar rotas da instituição',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Busca estatísticas de rotas de uma instituição
+     */
+    public function getInstitutionRouteStats($institutionId)
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user instanceof User) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuário não autenticado'
+                ], 401);
+            }
+
+            // *** VERIFICAR PERMISSÃO ***
+            if (!$this->userCanAccessInstitution($user, $institutionId)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Você não tem permissão para acessar estatísticas desta instituição'
+                ], 403);
+            }
+
+            // *** CALCULAR ESTATÍSTICAS ***
+            $stats = $this->calculateInstitutionStats($institutionId);
+
+            return response()->json([
+                'success' => true,
+                'institution_id' => (int) $institutionId,
+                'stats' => $stats
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao buscar estatísticas da instituição',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
