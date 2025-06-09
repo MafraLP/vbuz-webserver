@@ -701,7 +701,7 @@ class RouteController extends Controller
             }
 
             // *** CALCULAR ESTATÍSTICAS ***
-            $stats = $this->calculateInstitutionStats($institutionId);
+            //$stats = $this->calculateInstitutionStats($institutionId);
 
             return response()->json([
                 'success' => true,
