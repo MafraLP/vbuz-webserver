@@ -706,7 +706,7 @@ class RouteController extends Controller
             return response()->json([
                 'success' => true,
                 'institution_id' => (int) $institutionId,
-                'stats' => $stats
+                'stats' => null
             ]);
 
         } catch (Exception $e) {
