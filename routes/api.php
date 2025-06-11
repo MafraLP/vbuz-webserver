@@ -6,20 +6,17 @@ use App\Http\Controllers\PointController;
 use App\Http\Controllers\RoutePointController;
 use App\Http\Controllers\RouteController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PermissionStatsController;
+use App\Http\Controllers\UserPermissionController;
+//use App\Http\Controllers\DebugController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-Route::post('/debug', function () {
-    return response()->json(['status' => 'success', 'message' => 'Debug endpoint working']);
-});
-
-Route::post('/simple', function () {
-    return response()->json([
-        'success' => true,
-        'message' => 'Rota simples funcionando'
-    ]);
-});
+//Route::post('/debug', [DebugController::class, 'debug']);
+//
+//Route::post('/simple', [DebugController::class, 'simple']);
 
 Route::controller(AuthController::class)
     ->prefix('auth')
@@ -40,12 +37,7 @@ Route::controller(AuthController::class)
         });
     });
 
-Route::options('{any}', function () {
-    return response('', 200)
-        ->header('Access-Control-Allow-Origin', 'http://localhost:9000')
-        ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-        ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-})->where('any', '.*');
+//Route::options('{any}', [DebugController::class, 'options'])->where('any', '.*');
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +60,47 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/institutions/{id}/users', [InstitutionController::class, 'getInstitutionUsers']);
     Route::post('/institutions/{id}/users', [InstitutionController::class, 'addUserToInstitution']);
     Route::delete('/institutions/{institutionId}/users/{userId}', [InstitutionController::class, 'removeUserFromInstitution']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| API Routes for Permissions/Carteirinhas
+|--------------------------------------------------------------------------
+*/
+
+// CRUD básico de permissões/carteirinhas
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/permissions', [PermissionController::class, 'index']);
+    Route::post('/permissions', [PermissionController::class, 'store']);
+    Route::get('/permissions/{id}', [PermissionController::class, 'show']);
+    Route::put('/permissions/{id}', [PermissionController::class, 'update']);
+    Route::delete('/permissions/{id}', [PermissionController::class, 'destroy']);
+
+    // Ativar/desativar permissão
+    Route::patch('/permissions/{id}/toggle-status', [PermissionController::class, 'toggleStatus']);
+
+    // Gerenciamento de usuários com permissões
+    Route::get('/permissions/{id}/users', [PermissionController::class, 'getUsers']);
+    Route::post('/permissions/{id}/grant-user', [PermissionController::class, 'grantToUser']);
+    Route::post('/permissions/{id}/revoke-user', [PermissionController::class, 'revokeFromUser']);
+
+    // Rotas que requerem uma permissão específica
+    Route::get('/permissions/{id}/routes', [PermissionController::class, 'getRoutes']);
+
+    // Permissões disponíveis para um usuário
+    Route::get('/users/{userId}/available-permissions', [PermissionController::class, 'availableForUser']);
+
+    // Permissões de uma instituição específica
+    Route::get('/institutions/{institutionId}/permissions', [PermissionController::class, 'index']);
+
+    // Estatísticas de permissões
+    Route::get('/institutions/{institutionId}/permissions/stats', [PermissionStatsController::class, 'getInstitutionStats']);
+    Route::get('/permissions/popular', [PermissionStatsController::class, 'getPopularPermissions']);
+
+    // Gestão de permissões de usuários
+    Route::get('/users/{userId}/has-permission/{permissionId}', [UserPermissionController::class, 'hasPermission']);
+    Route::get('/users/{userId}/permissions', [UserPermissionController::class, 'getUserPermissions']);
+    Route::get('/permissions/search-users', [UserPermissionController::class, 'searchUsersByPermissions']);
 });
 
 /*

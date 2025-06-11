@@ -3,6 +3,7 @@
 namespace App\Models\Users;
 
 use App\Models\Institution;
+use App\Models\Permission;
 use App\Models\Users\Profiles\DriverProfile;
 use App\Models\Users\Profiles\ManagerProfile;
 use App\Models\Users\Profiles\MonitorProfile;
@@ -124,4 +125,22 @@ class User extends Authenticatable
                 return $this->institutions()->get();
         }
     }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions')
+            ->withPivot([
+                'granted_at',
+                'granted_by',
+                'expires_at',
+                'is_active'
+            ])
+            ->withTimestamps()
+            ->where('user_permissions.is_active', true)
+            ->where(function($query) {
+                $query->whereNull('user_permissions.expires_at')
+                    ->orWhere('user_permissions.expires_at', '>', now());
+            });
+    }
+
 }

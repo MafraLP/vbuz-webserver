@@ -11,23 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Adicionar índices para melhor performance na tabela points
-        Schema::table('points', function (Blueprint $table) {
-            try {
-                // Índices para consultas geográficas
-                $table->index(['latitude', 'longitude']);
-                $table->index('institution_id');
-                $table->index('type');
-                $table->index('is_active');
-
-                // Índice composto para consultas filtradas
-                $table->index(['institution_id', 'is_active', 'type']);
-            } catch (Exception $e) {
-                // Índices já existem, ignorar
-                            }
-        });
-
-        // Adicionar coluna location com PostGIS se disponível
         $this->addPostGISLocationToPoints();
     }
 
